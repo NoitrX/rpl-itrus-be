@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  username String @unique
+  nim String @unique
+  email String @unique
+  password String 
+  level Level @default(USER)
+  status Status @default(inactive)
+  createdPost Post[] @relation("CreatedByRelation")
+  updatedPost Post[] @relation("UpdatedByRelation")
+  authorComment Interaction_Comment[] @relation("createdComment")
+  user_liked Interaction_Like[] @relation("userLiked")
+  reportedUser Report_User[] @relation("reportedUser") 
+  authorUser Report_User[] @relation("authorReport")  
+  authorReportPost Report_Post[] @relation("authorReportPost")  
+}
+
+model Post {
+  id Int @id @default(autoincrement())
+  content String
+  createdBy Int
+  updatedBy Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+  createdByUser User @relation("CreatedByRelation", fields: [createdBy], references: [id])
+  updatedByUser User? @relation("UpdatedByRelation", fields: [updatedBy], references: [id])
+  images        Image_Post[] 
+  video         Video_Post[] 
+  comment_post Interaction_Comment[] @relation("postComment")
+  liked_post Interaction_Like[] @relation("postLiked") 
+  reported_post Report_Post[] @relation("reportedPost") 
+  
+}
+
+model Image_Post {
+  id Int @id @default(autoincrement())
+  url String
+  postId Int
+  post Post @relation(fields: [postId], references: [id])
+}
+
+model Video_Post {
+  id Int @id @default(autoincrement())
+  url String
+  postId Int
+  post Post @relation(fields: [postId], references: [id])
+}
+
+model Interaction_Comment {
+  id Int @id @default(autoincrement())
+  postId Int 
+  post_comment Post @relation("postComment",fields: [postId], references: [id])
+  author_id Int
+  author_comment User @relation("createdComment",fields: [author_id], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Interaction_Like {
+  id Int @id @default(autoincrement())
+  liked Boolean @default(false)
+  postId Int
+  post_liked Post @relation("postLiked", fields: [postId], references: [id])
+  user_id Int
+  user_liked User @relation("userLiked", fields: [user_id], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Report_User {
+  id Int @id @default(autoincrement())
+  reported_userId Int
+  reportedUser User @relation("reportedUser", fields: [reported_userId], references: [id])
+  author_id Int
+  authorReport User @relation("authorReport", fields: [author_id], references: [id])
+  context String
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Report_Post {
+  id Int @id @default(autoincrement())
+  reported_postId Int
+  reportedPost Post @relation("reportedPost", fields: [reported_postId], references: [id])
+  author_id Int
+  authorReportPost User @relation("authorReportPost", fields: [author_id], references: [id])
+}
+enum Level {
+  USER
+  ADMIN
+}
+
+enum Status {
+  active
+  inactive
+}
