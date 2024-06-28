@@ -39,27 +39,22 @@ model Post {
   updatedAt DateTime? @updatedAt
   createdByUser User @relation("CreatedByRelation", fields: [createdBy], references: [id])
   updatedByUser User? @relation("UpdatedByRelation", fields: [updatedBy], references: [id])
-  images        Image_Post[] 
-  video         Video_Post[] 
+  images        Posted_Content[] @relation("postImage")
+  video         Posted_Content[] @relation("postVideo")
   comment_post Interaction_Comment[] @relation("postComment")
   liked_post Interaction_Like[] @relation("postLiked") 
   reported_post Report_Post[] @relation("reportedPost") 
-  
 }
 
-model Image_Post {
+model Posted_Content {
   id Int @id @default(autoincrement())
-  url String
+  url_image String
+  url_video String
   postId Int
-  post Post @relation(fields: [postId], references: [id])
+  post_Image Post @relation("postImage", fields: [postId], references: [id], map: "postImage_fk")
+  post_Video Post @relation("postVideo", fields: [postId], references: [id], map: "postVideo_fk")
 }
 
-model Video_Post {
-  id Int @id @default(autoincrement())
-  url String
-  postId Int
-  post Post @relation(fields: [postId], references: [id])
-}
 
 model Interaction_Comment {
   id Int @id @default(autoincrement())

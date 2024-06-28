@@ -7,6 +7,7 @@ const logger = require("morgan");
 // Routing For API
 const v1 = "/api/itrus";
 const authRouter = require("./app/api/auth/router");
+const postRouter = require("./app/api/post/router");
 
 // Middleware
 const handlerErrorMiddleware = require("./app/middlewares/handler-error");
@@ -22,6 +23,7 @@ app.get("/", function (req, res) {
 });
 //Router For API
 app.use(v1, authRouter);
+app.use(v1, postRouter);
 // Middleware
 app.use(handlerErrorMiddleware);
 
