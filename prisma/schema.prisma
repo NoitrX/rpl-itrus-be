@@ -31,28 +31,31 @@ model User {
 }
 
 model Post {
-  id Int @id @default(autoincrement())
-  content String
-  createdBy Int
-  updatedBy Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime? @updatedAt
-  createdByUser User @relation("CreatedByRelation", fields: [createdBy], references: [id])
-  updatedByUser User? @relation("UpdatedByRelation", fields: [updatedBy], references: [id])
-  images        Posted_Content[] @relation("postImage")
-  video         Posted_Content[] @relation("postVideo")
+  id           Int                 @id @default(autoincrement())
+  content      String
+  createdBy    Int
+  updatedBy    Int
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime?           @updatedAt
+  createdByUser User               @relation("CreatedByRelation", fields: [createdBy], references: [id])
+  updatedByUser User?              @relation("UpdatedByRelation", fields: [updatedBy], references: [id])
+  media        Posted_Content[]    @relation("postMedia")
   comment_post Interaction_Comment[] @relation("postComment")
-  liked_post Interaction_Like[] @relation("postLiked") 
-  reported_post Report_Post[] @relation("reportedPost") 
+  liked_post   Interaction_Like[]  @relation("postLiked")
+  reported_post Report_Post[]      @relation("reportedPost")
 }
 
 model Posted_Content {
-  id Int @id @default(autoincrement())
-  url_image String
-  url_video String
-  postId Int
-  post_Image Post @relation("postImage", fields: [postId], references: [id], map: "postImage_fk")
-  post_Video Post @relation("postVideo", fields: [postId], references: [id], map: "postVideo_fk")
+  id       Int      @id @default(autoincrement())
+  url      String?
+  type     MediaType
+  postId   Int
+  post     Post     @relation("postMedia", fields: [postId], references: [id])
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
 }
 
 
