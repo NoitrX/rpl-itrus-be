@@ -18,7 +18,15 @@ const getAllPost = async (req) => {
         },
       },
       comment_post: true,
-      liked_post: true,
+      _count: {
+        select: {
+          liked_post: {
+            where: {
+              liked: true,
+            },
+          },
+        },
+      },
     },
   });
   return result;
